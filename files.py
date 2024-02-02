@@ -1,6 +1,7 @@
 # Operations with files
 import os
 import pandas
+import shutil
 
 file_not_found_msg = "El fichero no existe: "
 
@@ -100,3 +101,13 @@ def delete_file(file):
     if os.path.exists(file):
         # Delete file
         os.remove(file)
+
+
+def move_file(source_file, target_dir):
+    """
+    Moves one file to another directory
+    :param source_file: file to move (absolute path)
+    :param target_dir: target directory (absolute path)
+    :return:
+    """
+    shutil.move(source_file, target_dir)

@@ -1,14 +1,7 @@
 import files
 import sys
 import tempo
-import logging
-
-log_file = 'C:\\tmp\\tempo_log.txt'
-err_tempo_file_not_found = 'Tempo File not found: {0}'
-err_tempo_to_json = 'Error converting tempo to json: {0}'
-
-# Log configurations
-logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+import log_config
 
 # Constantes
 ruta_virtual_python = sys.executable
@@ -46,14 +39,13 @@ def files_test():
 
 
 def tempo_task():
+    log_config.log_init()
     try:
         tempo.process_tempo_directory()
     except Exception as e:
-        logging.error(err_tempo_to_json.format(e))
+        log_config.logging.error(log_config.err_general.format(e))
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    #files_test()
+    # files_test()
     tempo_task()
-
