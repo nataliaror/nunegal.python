@@ -1,51 +1,46 @@
-import files
 import sys
 import tempo
-import log_config
-
-# Constantes
-ruta_virtual_python = sys.executable
-ruta_global_python = sys.base_prefix
-ruta_bibliotecas = sys.exec_prefix
-
-path = "C:\\tmp\\file.txt"
-file1 = "C:\\tmp\\file.txt"
-file2 = "C:\\tmp\\target.txt"
-file3 = "C:\\tmp\\excel.txt"
-path_excel = "C:\\tmp\\Tempo_SSCCT_Junio_2023\\Usuario_ Natalia Rodríguez Rodríguez_2023-05-26_2023-06-25.xlsx"
+import log_config as lc
 
 
-def files_test():
-    print('Ruta virtual python: ' + ruta_virtual_python)
-    print('Ruta global python: ' + ruta_global_python)
-    print('Ruta bibliotecas python: ' + ruta_bibliotecas)
-    print('LECTURA DE FICHERO')
-    print(files.read_text_file(path) + '\r\n')
-    print('LECTURA DE FICHERO LÍNEA A LÍNEA')
-    print(files.read_text_file_line_by_line(path) + '\r\n')
-    print('AÑADIENDO EL CONTENIDO DE UN FICHERO TXT A OTRO...')
-    files.append_txt_file_content(file1, file2)
-    print('AÑADIENDO TEXTO A UN FICHERO TXT')
-    files.append_text_to_file("Añadiendo texto al fichero...", file2)
-    print('LECTURA DE FICHERO EXCEL')
-    data_frame = files.read_excel_file(path_excel)
-    # Muestra la información básica sobre el DataFrame
-    print(data_frame.info())
-    # Muestra el contenido del Data Frame
-    print(data_frame)
-    # Delete file
-    files.delete_file(file3)
-    data_frame.to_csv(file3, sep='\t', index=False)
+def validate_args(arguments):
+    if len(arguments) != 2:
+        return False
+    else:
+        if arguments[1] != '-p' and arguments[1] != '-c' and arguments[1] != '-d' and arguments[1] != '-g' and arguments[1] != '-h':
+            return False
+    return True
 
 
-def tempo_task():
-    log_config.log_init()
+def show_help():
+    lc.write_to_log_console(lc.LogLevel.WARNING, '------------------ OPTIONS ------------------')
+    lc.write_to_log_console(lc.LogLevel.WARNING, '-h: show help')
+    lc.write_to_log_console(lc.LogLevel.WARNING, '-d: download files from directory')
+    lc.write_to_log_console(lc.LogLevel.WARNING, '-p: process directory')
+    lc.write_to_log_console(lc.LogLevel.WARNING, '-g: get all documents from tempo collection')
+    lc.write_to_log_console(lc.LogLevel.WARNING, '-c: clear mongodb tempo collection')
+    lc.write_to_log_console(lc.LogLevel.WARNING, '---------------------------------------------')
+
+
+def tempo_task(arguments):
     try:
-        tempo.process_tempo_directory()
+        if arguments[1] == '-h':
+            show_help()
+        if arguments[1] == '-p':
+            tempo.process_tempo_directory()
+        elif arguments[1] == '-c':
+            tempo.clear_tempo_collection()
+        elif arguments[1] == '-d':
+            tempo.restore_tempo_downloaded()
+        elif arguments[1] == '-g':
+            tempo.get_tempo_collection()
     except Exception as e:
-        log_config.logging.error(log_config.err_general.format(e))
+        lc.write_to_log_console(lc.LogLevel.ERROR, lc.err_general.format(e))
 
 
 if __name__ == '__main__':
-    # files_test()
-    tempo_task()
+    lc.log_init()
+    if validate_args(sys.argv):
+        tempo_task(sys.argv)
+    else:
+        lc.write_to_log_console(lc.LogLevel.WARNING, lc.warn_arguments)

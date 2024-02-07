@@ -1,18 +1,19 @@
 # Mongo DB Atlas Repository
-import json
 import certifi
 from pymongo import MongoClient
+
+import properties
 
 # For connecting to MongoDB Server with SSL Handshake
 ca = certifi.where()
 # Connection String
-connection_string = 'mongodb+srv://admin:admin@my-storage.oa0cskx.mongodb.net/?retryWrites=true&w=majority'
+connection_string = properties.uri
 # Client creation
 mongodb_client = MongoClient(connection_string, tlsCAFile=ca)
 # Select database
-database = mongodb_client['nunegal']
+database = mongodb_client[properties.database]
 # Select collection
-collection_tempo = database['tempo']
+collection_tempo = database[properties.collection]
 
 
 def get(document):
@@ -20,13 +21,21 @@ def get(document):
     Gets one element from mongodb (tempo collection)
     Filter: Nombre de usuario / Período
     :param document: document to retrieve
-    :return:
+    :return: requested document
     """
     user_name = document["Nombre de usuario"]
     period = document["Período"]
     # Establish Filter
     document_filter = {'Nombre de usuario': user_name, 'Período': period}
     return collection_tempo.find_one(document_filter)
+
+
+def get_all():
+    """
+    Gets all documents from mongodb (tempo collection)
+    :return: list of all documents
+    """
+    return collection_tempo.find()
 
 
 def insert(document):

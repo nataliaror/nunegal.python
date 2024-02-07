@@ -87,9 +87,7 @@ def read_excel_file(path):
     data_frame = pandas.read_excel(path)
 
     # Filter only cells with content
-    datos_filtrados = data_frame.dropna(axis=0, how='all').dropna(axis=1, how='all')
-
-    return datos_filtrados
+    return data_frame.dropna(axis=0, how='all').dropna(axis=1, how='all')
 
 
 def delete_file(file):
@@ -110,4 +108,21 @@ def move_file(source_file, target_dir):
     :param target_dir: target directory (absolute path)
     :return:
     """
-    shutil.move(source_file, target_dir)
+    target_file = os.path.join(target_dir, os.path.basename(source_file))
+    shutil.move(source_file, target_file)
+
+
+def copy_files(source_dir, target_dir):
+    """
+    Copies all files from one directory to another
+    :param source_dir: source directory (absolute path)
+    :param target_dir: target directory (absolute path)
+    :return:
+    """
+    source_content = os.listdir(source_dir)
+    # Get only files, not directories
+    source_files = [os.path.join(source_dir, file) for file in source_content if
+                    os.path.isfile(os.path.join(source_dir, file))]
+
+    for file in source_files:
+        shutil.copy(file, target_dir)
